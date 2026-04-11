@@ -34,3 +34,12 @@ async def update_task(conn: asyncpg.Connection, task_id: UUID, title: str | None
 
     record = await conn.fetchrow(query, task_id, title, status)
     return dict(record) if record else None
+
+
+async def delete_task(pool: asyncpg.Pool, task_id: UUID) -> bool:
+    async with pool.acquire() as conn:
+        async with conn.transaction():
+            record = await conn.fetchrow(
+                "DELETE FROM tasks WHERE id = $1 RETURNING id", task_id
+            )
+            return record is not None
