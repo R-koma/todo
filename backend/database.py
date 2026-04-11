@@ -21,8 +21,10 @@ async def close_pool():
         _pool = None
 
 
-async def get_db():
-    return await get_pool()
+async def get_db() -> asyncpg.Connection:
+    pool = await get_pool()
+    async with pool.acquire() as conn:
+        yield conn
 
 
-DB = Annotated[asyncpg.Pool, Depends(get_db)]
+DB = Annotated[asyncpg.Connection, Depends(get_db)]
