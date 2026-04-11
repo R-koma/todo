@@ -28,3 +28,11 @@ async def update_task(task_id: UUID, task_data: TaskUpdate, db: DB):
     if not record:
         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Task not found")
     return record
+
+
+@router.delete("/{task_id}", status_code=status.HTTP_204_NO_CONTENT)
+async def delete_task(task_id: UUID, db: DB):
+    success = await task_repository.delete_task(db, task_id)
+
+    if not success:
+        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Task not found")
