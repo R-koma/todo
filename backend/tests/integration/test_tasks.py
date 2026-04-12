@@ -43,3 +43,33 @@ class TestGetTasks:
         body = response.json()
         assert response.status_code == 200
         assert body["tasks"] == []
+
+
+@pytest.mark.integration
+class TestUpdateTask:
+    async def test_update_task_returns_200(self, client, sample_task):
+        task_id = sample_task["id"]
+        response = await client.patch(f"/api/tasks/{task_id}", json={"title": "Buy water"})
+        assert response.status_code == 200
+
+    async def test_update_task_returns_new_title(self, client, sample_task):
+        task_id = sample_task["id"]
+        response = await client.patch(f"/api/tasks/{task_id}", json={"title": "Buy water"})
+        body = response.json()
+        assert body["title"] == "Buy water"
+
+    async def test_update_task_status_returns_200(self, client, sample_task):
+        task_id = sample_task["id"]
+        response = await client.patch(f"/api/tasks/{task_id}", json={"status": "completed"})
+        assert response.status_code == 200
+    
+    async def test_update_task_status_returns_completed(self, client, sample_task):
+        task_id = sample_task["id"]
+        response = await client.patch(f"/api/tasks/{task_id}", json={"status": "completed"})
+        body = response.json()
+        assert body["status"] == "completed"
+
+    async def test_update_nonexistent_task_returns_404(self, client):
+        nonexistent_id = "00000000-0000-0000-0000-000000000000"
+        response = await client.patch(f"/api/tasks/{nonexistent_id}", json={"title": "Buy water"})
+        assert response.status_code == 404
