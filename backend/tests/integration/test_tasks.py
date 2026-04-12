@@ -73,3 +73,22 @@ class TestUpdateTask:
         nonexistent_id = "00000000-0000-0000-0000-000000000000"
         response = await client.patch(f"/api/tasks/{nonexistent_id}", json={"title": "Buy water"})
         assert response.status_code == 404
+
+
+@pytest.mark.integration
+class TestDeleteTask:
+    async def test_delete_task_returns_204(self, client, sample_task):
+        task_id = sample_task["id"]
+        response = await client.delete(f"/api/tasks/{task_id}")
+        assert response.status_code == 204
+    
+    async def test_deleted_task_not_in_task_list(self, client, sample_task):
+        task_id = sample_task["id"]
+        await client.delete(f"/api/tasks/{task_id}")
+        response = await client.get("/api/tasks")
+        assert response.json()["tasks"] == []
+
+    async def test_delete_nonexistent_task_returns_404(self, client):
+        nonexistent_id = "00000000-0000-0000-0000-000000000000"
+        response = await client.delete(f"/api/tasks/{nonexistent_id}")
+        assert response.status_code == 404
