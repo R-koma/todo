@@ -2,6 +2,7 @@ import asyncpg
 from config import DATABASE_URL
 from typing import Annotated
 from fastapi import Depends
+from collections.abc import AsyncGenerator
 
 
 _pool: asyncpg.Pool | None = None
@@ -21,7 +22,7 @@ async def close_pool():
         _pool = None
 
 
-async def get_db() -> asyncpg.Connection:
+async def get_db() -> AsyncGenerator[asyncpg.Connection]:
     pool = await get_pool()
     async with pool.acquire() as conn:
         yield conn
