@@ -1,7 +1,7 @@
 from datetime import datetime
 from uuid import UUID
 
-from pydantic import BaseModel
+from pydantic import BaseModel, Field
 
 
 class TaskResponse(BaseModel):
@@ -13,12 +13,13 @@ class TaskResponse(BaseModel):
 
 
 class TaskCreate(BaseModel):
-    title: str
+    title: str = Field(min_length=1)
 
 
 class TaskUpdate(BaseModel):
     title: str | None = None
     status: str | None = None
+
 
 class TaskListResponse(BaseModel):
     tasks: list[TaskResponse]
