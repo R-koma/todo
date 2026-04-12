@@ -25,7 +25,14 @@ def upgrade() -> None:
 
 
 def downgrade() -> None:
-    """Downgrade schema."""
+    """
+    Revert the tasks status constraint and rename 'completed' statuses to 'is_completed'.
+    
+    Drops the `tasks_status_check` constraint on the `tasks` table, updates rows with
+    `status = 'completed'` to `status = 'is_completed'`, and re-adds the
+    `tasks_status_check` constraint allowing `status` values `'in_progress'` and
+    `'is_completed'`.
+    """
     op.execute("ALTER TABLE tasks DROP CONSTRAINT tasks_status_check")
     op.execute("UPDATE tasks SET status = 'is_completed' WHERE status = 'completed'")
     op.execute("ALTER TABLE tasks ADD CONSTRAINT tasks_status_check CHECK (status IN('in_progress', 'is_completed'))")

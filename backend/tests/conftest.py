@@ -28,6 +28,15 @@ async def clean_db(test_pool):
 
 @pytest_asyncio.fixture
 async def client(test_pool):
+    """
+    Provide an httpx.AsyncClient configured to call the ASGI `app` while overriding the app's `get_db` dependency to yield a connection from the supplied test_pool.
+    
+    Parameters:
+        test_pool: An asyncpg connection pool used to acquire a connection for each request.
+    
+    Returns:
+        ac: An AsyncClient instance bound to the ASGI app and base URL "http://test". The fixture yields the client; after use the dependency override is cleared.
+    """
     async def override_get_db():
         async with test_pool.acquire() as conn:
             yield conn
