@@ -13,6 +13,8 @@ class TestCreateTask:
         assert body["title"] == "Buy milk"
         assert body["status"] == "in_progress"
         assert "id" in body
+        assert "created_at" in body
+        assert "updated_at" in body
     
     @pytest.mark.parametrize("invalid_payload, expected_status", [
         ({"title": ""}, 422),
