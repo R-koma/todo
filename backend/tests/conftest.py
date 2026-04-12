@@ -34,3 +34,9 @@ async def client(test_pool):
     ) as ac:
         yield ac
     app.dependency_overrides.clear()
+
+
+@pytest_asyncio.fixture
+async def sample_task(client):
+    response = await client.post("/api/tasks", json={"title": "Buy milk"})
+    return response.json()
