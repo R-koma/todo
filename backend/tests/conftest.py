@@ -28,7 +28,11 @@ async def clean_db(test_pool):
 
 @pytest_asyncio.fixture
 async def client(test_pool):
-    app.dependency_overrides[get_db] = lambda: test_pool
+    async def override_get_db():
+        async with test_pool.acquire() as conn:
+            yield conn
+
+    app.dependency_overrides[get_db] = override_get_db
     async with AsyncClient(
         transport=ASGITransport(app=app), base_url="http://test"
     ) as ac:
