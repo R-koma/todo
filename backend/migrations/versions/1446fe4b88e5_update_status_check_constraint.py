@@ -27,4 +27,5 @@ def upgrade() -> None:
 def downgrade() -> None:
     """Downgrade schema."""
     op.execute("ALTER TABLE tasks DROP CONSTRAINT tasks_status_check")
+    op.execute("UPDATE tasks SET status = 'is_completed' WHERE status = 'completed'")
     op.execute("ALTER TABLE tasks ADD CONSTRAINT tasks_status_check CHECK (status IN('in_progress', 'is_completed'))")
