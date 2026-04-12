@@ -1,5 +1,5 @@
 services:
-  postgres:
+  db:
     image: postgres:17
     container_name: todo-agent-db
     environment:
@@ -10,6 +10,15 @@ services:
       - "5433:5432"
     volumes:
       - postgres_data:/var/lib/postgresql/data
+
+  db_test:
+    image: postgres:17
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: postgres
+      POSTGRES_DB: todo_test_db
+    ports:
+      - "5434:5432"
 
 volumes:
   postgres_data:
