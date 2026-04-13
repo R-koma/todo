@@ -4,3 +4,6 @@ __pycache__/
 *.pyc
 
 todo_integration_test_eval.md
+MYPY_ERRORS_RESOLVED.md
+MYPY_EVALUATION.md
+CI_INTEGRATION.md
