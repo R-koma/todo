@@ -1,8 +1,9 @@
 from uuid import UUID
+from typing import Any
 import asyncpg
 
 
-async def get_tasks(conn: asyncpg.Connection) -> dict | None:
+async def get_tasks(conn: asyncpg.Connection) -> list[dict[str, Any]]:
     query = """--sql
       SELECT id, title, status, created_at, updated_at
       FROM tasks
@@ -12,17 +13,17 @@ async def get_tasks(conn: asyncpg.Connection) -> dict | None:
     return [dict(r) for r in records]
 
 
-async def create_task(conn: asyncpg.Connection, task_id: UUID, title: str, status: str) -> dict | None:
+async def create_task(conn: asyncpg.Connection, task_id: UUID, title: str, status: str) -> dict[str, Any] | None:
     query = """--sql
       INSERT INTO tasks (id, title, status)
       VALUES ($1, $2, $3)
       RETURNING id, title, status, created_at, updated_at
     """
     record = await conn.fetchrow(query, task_id, title, status)
-    return dict(record)
+    return dict(record) if record else None
 
 
-async def update_task(conn: asyncpg.Connection, task_id: UUID, title: str | None = None, status: str | None = None):
+async def update_task(conn: asyncpg.Connection, task_id: UUID, title: str | None = None, status: str | None = None) -> dict[str, Any] | None:
     query = """--sql
       UPDATE tasks
       SET title = COALESCE($2, title),
