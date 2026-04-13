@@ -18,7 +18,7 @@ async def get_tasks(db: DB) -> dict[str, Any]:
 @router.post("", response_model=TaskResponse)
 async def create_task(body: TaskCreate, db: DB) -> dict[str, Any]:
     record = await task_repository.create_task(db, uuid4(), body.title, "in_progress")
-    if not record:
+    if record is None:
         raise HTTPException(
             status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
             detail="Failed to create task",
@@ -31,7 +31,7 @@ async def update_task(task_id: UUID, task_data: TaskUpdate, db: DB) -> dict[str,
     update_data = task_data.model_dump(exclude_unset=True)
     record = await task_repository.update_task(db, task_id=task_id, **update_data)
 
-    if not record:
+    if record is None:
         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Task not found")
     return record
 
