@@ -16,8 +16,13 @@ async def get_tasks(db: DB) -> dict[str, Any]:
 
 
 @router.post("", response_model=TaskResponse)
-async def create_task(body: TaskCreate, db: DB) -> dict[str, Any] | None:
+async def create_task(body: TaskCreate, db: DB) -> dict[str, Any]:
     record = await task_repository.create_task(db, uuid4(), body.title, "in_progress")
+    if not record:
+        raise HTTPException(
+            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+            detail="Failed to create task",
+        )
     return record
 
 
