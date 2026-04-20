@@ -33,3 +33,12 @@ jobs:
 
       - name: Run mypy
         run: uv run mypy .
+
+  mypy-result:
+    needs: mypy
+    if: always()
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check mypy result
+        run: |
+          if [ "${{ needs.mypy.result }}" = "failure" ]; then exit 1; fi
